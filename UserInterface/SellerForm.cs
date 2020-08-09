@@ -14,6 +14,11 @@ namespace UserInterface
     public partial class SellerForm : Form
     {
         public Seller Seller { get; set; }
+
+        public SellerForm(Seller seller):this()
+        {
+            Seller = seller;
+        }
         public SellerForm()
         {
             InitializeComponent();
@@ -21,10 +26,8 @@ namespace UserInterface
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Seller = new Seller()
-            {
-                Name = textBox1.Text
-            };
+            var s = Seller ?? new Seller();
+            s.Name = textBox1.Text;
             Close();
         }
     }

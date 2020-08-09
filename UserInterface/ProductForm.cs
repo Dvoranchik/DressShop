@@ -12,15 +12,21 @@ namespace UserInterface
             InitializeComponent();
         }
 
+        public ProductForm(Product product): this()
+        {
+            Product = product;
+            textBox2.Text = Product.Name;
+            numericUpDown1.Value = Product.Price;
+            numericUpDown2.Value = Product.Count;
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
-            Product = new Product()
-            {
-                Name = textBox2.Text,
-                Price = Convert.ToDecimal(textBox3.Text),
-                Count = Convert.ToInt32(textBox4.Text)
+            var p = Product ?? new Product();
+            p.Name = textBox2.Text;
+            p.Price = numericUpDown1.Value;
+            p.Count = Convert.ToInt32(numericUpDown2.Value);
 
-            };
             Close();
         }
 

@@ -14,6 +14,11 @@ namespace UserInterface
     public partial class CustomerForm : Form
     {
         public Customer Customer { get; set; }
+
+        public CustomerForm(Customer customer):this()
+        {
+            Customer = customer;
+        }
         public CustomerForm()
         {
             InitializeComponent();
@@ -21,10 +26,8 @@ namespace UserInterface
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Customer = new Customer()
-            {
-                Name = textBox1.Text
-            };
+            var c = Customer ?? new Customer();
+            c.Name = textBox1.Text;
             Close();
         }
 
