@@ -20,7 +20,7 @@ namespace BisnessLogic.Model
             Queue = new Queue<Cart>();
             IsModel = true;
         }
-
+        public int Count => Queue.Count;
         public void Enqueue(Cart cart)
         {
             if (Queue.Count <= MaxQueueLenght)
@@ -36,6 +36,8 @@ namespace BisnessLogic.Model
         public decimal Duqueue()
         {
             decimal sum = 0;
+            if (Queue.Count == 0)
+                return 0;
             var cart = Queue.Dequeue();
             if (cart != null)
             {
@@ -92,5 +94,7 @@ namespace BisnessLogic.Model
 
             return sum;
         }
+
+        
     }
 }
