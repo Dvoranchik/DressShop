@@ -13,6 +13,7 @@ namespace BisnessLogic.Model
         public int SellerID { get; set; }
         public virtual Seller Seller { get; set; }
         public DateTime CreatedTime { get; set; }
+        public decimal Price { get; set; }
 
         public override string ToString()
         {

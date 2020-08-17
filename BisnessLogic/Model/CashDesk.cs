@@ -9,16 +9,18 @@ namespace BisnessLogic.Model
         public Seller Seller { get; set; }
         public Queue<Cart> Queue { get; set; }
         public int Number { get; set; }
-
         public int MaxQueueLenght { get; set; }
         public int ExitCustomer { get; set; }
         public bool IsModel { get; set; }
+
+        public event EventHandler<Check> CheckClosed;
         public CashDesk(int number, Seller seller)
         {
             Number = number;
             Seller = seller;
             Queue = new Queue<Cart>();
             IsModel = true;
+            MaxQueueLenght = 10;
         }
         public int Count => Queue.Count;
         public void Enqueue(Cart cart)
@@ -86,15 +88,22 @@ namespace BisnessLogic.Model
                     }
                 }
 
+                check.Price = sum;
+
                 if (!IsModel)
                 {
                     db.SaveChanges();
                 }
+
+                CheckClosed?.Invoke(this, check);
             }
 
             return sum;
         }
 
-        
+        public override string ToString()
+        {
+            return $"Касса номер: {Number}";
+        }
     }
 }
