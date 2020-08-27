@@ -14,8 +14,9 @@ namespace BisnessLogic.Model
         public bool IsModel { get; set; }
 
         public event EventHandler<Check> CheckClosed;
-        public CashDesk(int number, Seller seller)
+        public CashDesk(int number, Seller seller, Context db)
         {
+            this.db = db ?? new Context();
             Number = number;
             Seller = seller;
             Queue = new Queue<Cart>();
@@ -25,7 +26,7 @@ namespace BisnessLogic.Model
         public int Count => Queue.Count;
         public void Enqueue(Cart cart)
         {
-            if (Queue.Count <= MaxQueueLenght)
+            if (Queue.Count < MaxQueueLenght)
             {
                 Queue.Enqueue(cart);
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Windows.Forms;
 using BisnessLogic.Model;
 
@@ -7,7 +8,7 @@ namespace UserInterface
 {
     public partial class ModelForm : Form
     {
-        ShopComputerModel model = new ShopComputerModel();
+        private ShopComputerModel model = new ShopComputerModel();
         public ModelForm()
         {
             InitializeComponent();
@@ -16,7 +17,6 @@ namespace UserInterface
         private void button1_Click(object sender, EventArgs e)
         {
             var cashBoxes = new List<CashBoxView>();
-
 
             for (int i = 0; i < model.CashDesks.Count; i++)
             {
@@ -34,6 +34,7 @@ namespace UserInterface
         private void ModelForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             model.Stop();
+            Thread.Sleep(1000);
         }
 
         private void ModelForm_Load(object sender, EventArgs e)
@@ -46,6 +47,11 @@ namespace UserInterface
         {
             model.CustomerSpeed = (int)numericUpDown1.Value;
             model.CashDeskSpeed = (int)numericUpDown2.Value;
+        }
+
+        private void ModelForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            model.Stop();
         }
     }
 }

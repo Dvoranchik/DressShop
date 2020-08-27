@@ -11,7 +11,8 @@ namespace BisnessLogic.Model
     { 
         Generator Generator = new Generator();
         Random random = new Random();
-        private bool isWorking = false;
+        private CancellationTokenSource cancellationTokenSource;
+        CancellationToken token;
         public List<CashDesk> CashDesks { get; set; } = new List<CashDesk>();
         public List<Cart> Carts { get; set; } = new List<Cart>();
         public List<Check> Checks { get; set; } = new List<Check>();
@@ -19,12 +20,15 @@ namespace BisnessLogic.Model
         public int CustomerSpeed { get; set; } = 100;
         public int CashDeskSpeed { get; set; } = 100;
         public Queue<Seller> Sellers { get; set; } = new Queue<Seller>();
+        private List<Task> tasks = new List<Task>();
 
         
 
         public ShopComputerModel()
         {
             var freeSellers = Generator.GetSellers(20);
+            cancellationTokenSource = new CancellationTokenSource();
+            token = cancellationTokenSource.Token;
             Generator.GetProducts(1000);
             Generator.GetCustomers(100);
             foreach (var seller in freeSellers)
@@ -34,41 +38,41 @@ namespace BisnessLogic.Model
 
             for (int i = 0; i < 3; i++)
             {
-                CashDesks.Add(new CashDesk(CashDesks.Count, Sellers.Dequeue()));
+                CashDesks.Add(new CashDesk(CashDesks.Count, Sellers.Dequeue(), null));
             }
         }
 
         public void Start()
         {
-            isWorking = true;
-            Task.Run(()=>CreateCarts(10, CustomerSpeed));
+            tasks.Add(new Task(()=>CreateCarts(10, token)));
 
-            var cashDesksTasks = CashDesks.Select(c => new Task(() => CashDeskWork(c, CashDeskSpeed)));
-            foreach (var task in cashDesksTasks)
+            tasks.AddRange(CashDesks.Select(c=>new Task(()=> CashDeskWork(c, token))));
+            foreach (var task in tasks)
             {
                 task.Start();
             }
+            
         }
 
         public void Stop()
         {
-            isWorking = false;
+            cancellationTokenSource.Cancel();
         }
 
-        private void CashDeskWork(CashDesk cashDesk, int sleep)
+        private void CashDeskWork(CashDesk cashDesk, CancellationToken token)
         {
-            while (isWorking)
+            while (!token.IsCancellationRequested)
             {
                 if (cashDesk.Count > 0)
                 {
                     cashDesk.Duqueue();
-                    Thread.Sleep(sleep);
+                    Thread.Sleep(CashDeskSpeed);
                 }
             }
         }
-        private void CreateCarts(int customerCounts, int sleep)
+        private void CreateCarts(int customerCounts, CancellationToken token)
         {
-            while (isWorking)
+            while (!token.IsCancellationRequested)
             {
                 var customers = Generator.GetCustomers(customerCounts);
                
@@ -85,7 +89,7 @@ namespace BisnessLogic.Model
                     cash.Enqueue(cart);
                 }
 
-                Thread.Sleep(sleep);
+                Thread.Sleep(CustomerSpeed);
             }
         }
     }

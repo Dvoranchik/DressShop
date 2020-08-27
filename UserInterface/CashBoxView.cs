@@ -10,7 +10,7 @@ namespace UserInterface
 {
     class CashBoxView
     {
-        private CashDesk cashDesk;
+        private readonly CashDesk cashDesk;
         public Label CashDeskName { get; set; }
         public ProgressBar Price { get; set; } 
         public NumericUpDown QueueLenght { get; set; }
@@ -22,7 +22,6 @@ namespace UserInterface
             QueueLenght = new NumericUpDown();
             Price   = new ProgressBar();
             Leave = new Label();
-
 
             this.cashDesk = cashDesk;
             CashDeskName.AutoSize = true;
@@ -38,15 +37,12 @@ namespace UserInterface
             QueueLenght.TabIndex = 2;
             QueueLenght.Maximum = 100000000000000000;
 
-
-
             Price.Location = new System.Drawing.Point(x+250, y);
             Price.Maximum = cashDesk.MaxQueueLenght;
             Price.Name = "progressBar" + number;
             Price.Size = new System.Drawing.Size(100, 23);
             Price.TabIndex = number;
             Price.Value = 0;
-
 
             Leave.AutoSize = true;
             Leave.Location = new System.Drawing.Point(x+400, y);
@@ -55,19 +51,18 @@ namespace UserInterface
             Leave.TabIndex = number;
             Leave.Text = cashDesk.ToString();
 
-
             cashDesk.CheckClosed += CashDesk_CheckClosed;
         }
 
 
         private void CashDesk_CheckClosed(object sender, Check e)
         {
-            QueueLenght.Invoke((Action) delegate
-            {
-                QueueLenght.Value += e.Price;
-                Price.Value = cashDesk.Count;
-                Leave.Text = cashDesk.ExitCustomer.ToString();
-            });
+            Price.Invoke((Action) delegate
+                {
+                    QueueLenght.Value += e.Price;
+                    Price.Value = cashDesk.Count;
+                    Leave.Text = cashDesk.ExitCustomer.ToString();
+                });
         }
     }
 }

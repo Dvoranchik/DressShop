@@ -12,7 +12,7 @@ namespace BisnessLogic.Model
     {
         public Customer Customer { get; set; }
         public Dictionary<Product,int> Products { get; set; }
-
+        public decimal Price => GetAll().Sum(p=>p.Price);
         public Cart(Customer customer)
         {
             Customer = customer;
